@@ -16,7 +16,7 @@
 #### 1. Clone the repository
 
 ```bash
-git clone <repo>
+git clone https://github.com/wu-wilson/claude-manager.git
 cd claude-manager
 ```
 
@@ -26,7 +26,7 @@ cd claude-manager
 ./launch.sh
 ```
 
-Open `http://localhost:5173` in **Chrome or Edge**. Click "Open Home Directory" or "Open Project Directory" and select the directory you want to manage.
+Open `http://localhost:5173` in **Chrome or Edge**.
 
 ## 🤖 Sub-Agents
 
