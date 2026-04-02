@@ -3,22 +3,29 @@
  * Writes the appropriate file(s) into the opened directory and rescans.
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
-import { createFile, createDirectory } from '../../lib/fs/operations';
-import { stringifyFrontmatter } from '../../lib/fs/frontmatter';
-import { useAppStore } from '../../store';
-import { useFileSystem } from '../../hooks/useFileSystem';
-import { cn, slugify } from '../../lib/utils';
+import { useState, useEffect, useRef } from "react";
+import { X } from "lucide-react";
+import { createFile, createDirectory } from "../../lib/fs/operations";
+import { stringifyFrontmatter } from "../../lib/fs/frontmatter";
+import { useAppStore } from "../../store";
+import { useFileSystem } from "../../hooks/useFileSystem";
+import { cn, slugify } from "../../lib/utils";
 
-type EntityCreationType = 'agent' | 'skill' | 'command' | 'claude_md';
+type EntityCreationType = "agent" | "skill" | "command" | "claude_md";
 
 const AVAILABLE_TOOLS = [
-  'Bash', 'Read', 'Write', 'Edit', 'Grep', 'Glob',
-  'WebFetch', 'TodoRead', 'TodoWrite',
+  "Bash",
+  "Read",
+  "Write",
+  "Edit",
+  "Grep",
+  "Glob",
+  "WebFetch",
+  "TodoRead",
+  "TodoWrite",
 ];
 
-const AVAILABLE_MODELS = ['sonnet', 'haiku', 'opus'];
+const AVAILABLE_MODELS = ["sonnet", "haiku", "opus"];
 
 interface CreateEntityModalProps {
   /** The entity type to create. */
@@ -37,10 +44,10 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
   const { rootHandle } = useAppStore();
   const { rescan } = useFileSystem();
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
-  const [model, setModel] = useState('sonnet');
+  const [model, setModel] = useState("sonnet");
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -54,10 +61,10 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
   // Close on Escape
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
   // Trap focus
@@ -65,9 +72,9 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
     const modal = modalRef.current;
     if (!modal) return;
     function handleTab(e: KeyboardEvent) {
-      if (e.key !== 'Tab') return;
+      if (e.key !== "Tab") return;
       const focusable = modal!.querySelectorAll<HTMLElement>(
-        'button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
@@ -79,8 +86,8 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
         first.focus();
       }
     }
-    modal.addEventListener('keydown', handleTab);
-    return () => modal.removeEventListener('keydown', handleTab);
+    modal.addEventListener("keydown", handleTab);
+    return () => modal.removeEventListener("keydown", handleTab);
   }, []);
 
   /**
@@ -90,7 +97,7 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
    */
   function toggleTool(tool: string) {
     setSelectedTools((prev) =>
-      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool]
+      prev.includes(tool) ? prev.filter((t) => t !== tool) : [...prev, tool],
     );
   }
 
@@ -117,7 +124,7 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
   function buildSkillContent(): string {
     return stringifyFrontmatter(
       { name, description },
-      `\n## ${name}\n\n${description}\n`
+      `\n## ${name}\n\n${description}\n`,
     );
   }
 
@@ -129,7 +136,7 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
   function buildCommandContent(): string {
     return stringifyFrontmatter(
       { name, description },
-      `\n## ${name}\n\n${description}\n`
+      `\n## ${name}\n\n${description}\n`,
     );
   }
 
@@ -146,40 +153,40 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
     try {
       const slug = slugify(name.trim());
 
-      if (type === 'agent') {
+      if (type === "agent") {
         const agentsDir = await rootHandle
-          .getDirectoryHandle('.claude', { create: true })
-          .then((d) => d.getDirectoryHandle('agents', { create: true }));
+          .getDirectoryHandle(".claude", { create: true })
+          .then((d) => d.getDirectoryHandle("agents", { create: true }));
         await createFile(agentsDir, `${slug}.md`, buildAgentContent());
-      } else if (type === 'skill') {
+      } else if (type === "skill") {
         const skillsDir = await rootHandle
-          .getDirectoryHandle('.claude', { create: true })
-          .then((d) => d.getDirectoryHandle('skills', { create: true }));
+          .getDirectoryHandle(".claude", { create: true })
+          .then((d) => d.getDirectoryHandle("skills", { create: true }));
         const skillDir = await createDirectory(skillsDir, slug);
-        await createFile(skillDir, 'SKILL.md', buildSkillContent());
-      } else if (type === 'command') {
+        await createFile(skillDir, "SKILL.md", buildSkillContent());
+      } else if (type === "command") {
         const commandsDir = await rootHandle
-          .getDirectoryHandle('.claude', { create: true })
-          .then((d) => d.getDirectoryHandle('commands', { create: true }));
+          .getDirectoryHandle(".claude", { create: true })
+          .then((d) => d.getDirectoryHandle("commands", { create: true }));
         await createFile(commandsDir, `${slug}.md`, buildCommandContent());
-      } else if (type === 'claude_md') {
-        await createFile(rootHandle, 'CLAUDE.md', CLAUDE_MD_TEMPLATE);
+      } else if (type === "claude_md") {
+        await createFile(rootHandle, "CLAUDE.md", CLAUDE_MD_TEMPLATE);
       }
 
       await rescan(rootHandle);
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create entity');
+      setError(err instanceof Error ? err.message : "Failed to create entity");
     } finally {
       setIsCreating(false);
     }
   }
 
   const TITLES: Record<EntityCreationType, string> = {
-    agent: 'New Agent',
-    skill: 'New Skill',
-    command: 'New Command',
-    claude_md: 'New CLAUDE.md',
+    agent: "New Agent",
+    skill: "New Skill",
+    command: "New Command",
+    claude_md: "New CLAUDE.md",
   };
 
   return (
@@ -200,7 +207,10 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 id="create-dialog-title" className="font-semibold text-slate-900 dark:text-zinc-100">
+          <h2
+            id="create-dialog-title"
+            className="font-semibold text-slate-900 dark:text-zinc-100"
+          >
             {TITLES[type]}
           </h2>
           <button
@@ -214,16 +224,22 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
 
         {/* Error */}
         {error && (
-          <div role="alert" className="text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2">
+          <div
+            role="alert"
+            className="text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-3 py-2"
+          >
             {error}
           </div>
         )}
 
         {/* Fields */}
-        {type !== 'claude_md' && (
+        {type !== "claude_md" && (
           <>
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="entity-name" className="text-xs font-medium text-slate-700 dark:text-zinc-300">
+              <label
+                htmlFor="entity-name"
+                className="text-xs font-medium text-slate-700 dark:text-zinc-300"
+              >
                 Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -232,18 +248,27 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={type === 'agent' ? 'e.g. code-reviewer' : 'e.g. my-skill'}
+                placeholder={
+                  type === "agent"
+                    ? "e.g. code-reviewer"
+                    : type === "command"
+                      ? "e.g. build-project"
+                      : "e.g. my-skill"
+                }
                 className={cn(
-                  'px-3 py-2 text-sm rounded-lg',
-                  'bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700',
-                  'text-slate-900 dark:text-zinc-100 placeholder:text-slate-400',
-                  'focus-ring'
+                  "px-3 py-2 text-sm rounded-lg",
+                  "bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700",
+                  "text-slate-900 dark:text-zinc-100 placeholder:text-slate-400",
+                  "focus-ring",
                 )}
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="entity-desc" className="text-xs font-medium text-slate-700 dark:text-zinc-300">
+              <label
+                htmlFor="entity-desc"
+                className="text-xs font-medium text-slate-700 dark:text-zinc-300"
+              >
                 Description
               </label>
               <textarea
@@ -253,10 +278,10 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
                 rows={3}
                 placeholder="Describe what this entity does…"
                 className={cn(
-                  'px-3 py-2 text-sm rounded-lg resize-none',
-                  'bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700',
-                  'text-slate-900 dark:text-zinc-100 placeholder:text-slate-400',
-                  'focus-ring'
+                  "px-3 py-2 text-sm rounded-lg resize-none",
+                  "bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700",
+                  "text-slate-900 dark:text-zinc-100 placeholder:text-slate-400",
+                  "focus-ring",
                 )}
               />
             </div>
@@ -264,10 +289,12 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
         )}
 
         {/* Agent-specific fields */}
-        {type === 'agent' && (
+        {type === "agent" && (
           <>
             <div className="flex flex-col gap-1.5">
-              <p className="text-xs font-medium text-slate-700 dark:text-zinc-300">Tools</p>
+              <p className="text-xs font-medium text-slate-700 dark:text-zinc-300">
+                Tools
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {AVAILABLE_TOOLS.map((tool) => (
                   <button
@@ -275,11 +302,11 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
                     type="button"
                     onClick={() => toggleTool(tool)}
                     className={cn(
-                      'px-2 py-1 rounded text-xs font-mono font-medium',
-                      'focus-ring transition-colors',
+                      "px-2 py-1 rounded text-xs font-mono font-medium",
+                      "focus-ring transition-colors",
                       selectedTools.includes(tool)
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700'
+                        ? "bg-indigo-600 text-white"
+                        : "bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700",
                     )}
                     aria-pressed={selectedTools.includes(tool)}
                   >
@@ -290,7 +317,10 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="agent-model" className="text-xs font-medium text-slate-700 dark:text-zinc-300">
+              <label
+                htmlFor="agent-model"
+                className="text-xs font-medium text-slate-700 dark:text-zinc-300"
+              >
                 Model
               </label>
               <select
@@ -298,14 +328,16 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 className={cn(
-                  'px-3 py-2 text-sm rounded-lg',
-                  'bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700',
-                  'text-slate-900 dark:text-zinc-100',
-                  'focus-ring'
+                  "px-3 py-2 text-sm rounded-lg",
+                  "bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700",
+                  "text-slate-900 dark:text-zinc-100",
+                  "focus-ring",
                 )}
               >
                 {AVAILABLE_MODELS.map((m) => (
-                  <option key={m} value={m}>{m}</option>
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
                 ))}
               </select>
             </div>
@@ -313,10 +345,10 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
         )}
 
         {/* claude_md note */}
-        {type === 'claude_md' && (
+        {type === "claude_md" && (
           <p className="text-sm text-slate-500 dark:text-zinc-400">
-            Creates a <code className="font-mono text-xs">CLAUDE.md</code> file in the root of your
-            opened directory with a starter template.
+            Creates a <code className="font-mono text-xs">CLAUDE.md</code> file
+            in the root of your opened directory with a starter template.
           </p>
         )}
 
@@ -325,25 +357,25 @@ export function CreateEntityModal({ type, onClose }: CreateEntityModalProps) {
           <button
             onClick={onClose}
             className={cn(
-              'px-4 py-2 rounded-lg text-sm font-medium',
-              'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300',
-              'hover:bg-slate-200 dark:hover:bg-zinc-700',
-              'focus-ring transition-colors'
+              "px-4 py-2 rounded-lg text-sm font-medium",
+              "bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300",
+              "hover:bg-slate-200 dark:hover:bg-zinc-700",
+              "focus-ring transition-colors",
             )}
           >
             Cancel
           </button>
           <button
             onClick={handleCreate}
-            disabled={isCreating || (type !== 'claude_md' && !name.trim())}
+            disabled={isCreating || (type !== "claude_md" && !name.trim())}
             className={cn(
-              'px-4 py-2 rounded-lg text-sm font-medium',
-              'bg-indigo-600 hover:bg-indigo-700 text-white',
-              'disabled:opacity-60 disabled:cursor-not-allowed',
-              'focus-ring transition-colors'
+              "px-4 py-2 rounded-lg text-sm font-medium",
+              "bg-indigo-600 hover:bg-indigo-700 text-white",
+              "disabled:opacity-60 disabled:cursor-not-allowed",
+              "focus-ring transition-colors",
             )}
           >
-            {isCreating ? 'Creating…' : 'Create'}
+            {isCreating ? "Creating…" : "Create"}
           </button>
         </div>
       </div>
