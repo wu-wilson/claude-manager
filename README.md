@@ -28,6 +28,14 @@ cd claude-manager
 
 Open `http://localhost:5173` in **Chrome or Edge**.
 
+## 🌐 Browser Requirements
+
+**Requires Chrome 86+ or Edge 86+.** The File System Access API (`showDirectoryPicker`) is fully supported in Chromium-based browsers.
+
+- Chrome/Edge 86+: ✅ Full support
+- Firefox: ⚠️ Behind a flag (`dom.fs.enabled` in `about:config`)
+- Safari: ⚠️ Partial support as of 2025
+
 ## 🤖 Sub-Agents
 
 Two Claude Code sub-agents are included in `.claude/agents/`:
