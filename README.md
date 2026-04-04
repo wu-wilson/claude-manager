@@ -26,15 +26,17 @@ cd claude-manager
 ./launch.sh
 ```
 
-Open `http://localhost:5173` in **Chrome or Edge**.
+Open `http://localhost:5173` in **Chrome, Edge, or Opera**.
 
 ## 🌐 Browser Requirements
 
-**Requires Chrome 86+ or Edge 86+.** The File System Access API (`showDirectoryPicker`) is fully supported in Chromium-based browsers.
+**Requires Chrome 86+, Edge 86+, or Opera 72+.** The File System Access API (`showDirectoryPicker`) is only supported in Chromium-based browsers.
 
-- Chrome/Edge 86+: ✅ Full support
-- Firefox: ⚠️ Behind a flag (`dom.fs.enabled` in `about:config`)
-- Safari: ⚠️ Partial support as of 2025
+- Chrome 86+: ✅ Supported
+- Edge 86+: ✅ Supported
+- Opera 72+: ✅ Supported
+- Firefox: ❌ Not supported
+- Safari: ❌ Not supported
 
 ## 🤖 Sub-Agents
 
