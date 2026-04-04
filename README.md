@@ -1,6 +1,6 @@
 ## ⚡ Overview
 
-**Claude Manager** is a browser-based dashboard for managing Claude Code configuration files — agents, skills, hooks, commands, settings, and memory. All file I/O happens directly in the browser via the File System Access API.
+**Conductor** is a browser-based dashboard for managing Claude Code configuration files — agents, skills, hooks, commands, settings, and memory. All file I/O happens directly in the browser via the File System Access API.
 
 ## 🚀 Stack
 
@@ -16,8 +16,8 @@
 #### 1. Clone the repository
 
 ```bash
-git clone https://github.com/wu-wilson/claude-manager.git
-cd claude-manager
+git clone https://github.com/wu-wilson/conductor.git
+cd conductor
 ```
 
 #### 2. Start the app

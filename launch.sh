@@ -14,6 +14,6 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
-echo "Starting Claude Manager..."
+echo "Starting Conductor..."
 echo "Open http://localhost:5173 in Chrome or Edge."
 npm run dev

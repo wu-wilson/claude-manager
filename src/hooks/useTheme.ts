@@ -7,7 +7,7 @@
 import { useEffect } from 'react';
 import { useAppStore } from '../store';
 
-const STORAGE_KEY = 'claude-manager-theme';
+const STORAGE_KEY = 'conductor-theme';
 
 /**
  * Initializes the theme from localStorage or system preference,

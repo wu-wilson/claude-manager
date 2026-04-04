@@ -1,4 +1,4 @@
-# Claude Code Config Manager
+# Conductor
 
 ## Project Purpose
 A local-first, purely frontend dashboard for managing Claude Code configuration files —
